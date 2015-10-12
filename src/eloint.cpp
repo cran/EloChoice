@@ -31,19 +31,18 @@ List eloint(CharacterVector winner, CharacterVector loser, CharacterVector allid
   }
 
   int kv = kval[0];
-  int looserrat = 0; int winnerrat = 0; double pscore = 0.0;
-  double kp = 0.0; signed int ratingdiff = 0; //signed int rdiff = 0;
-  //std::vector<double> pscores; pscores.assign(winner.size(), 0.0);
+  int loserrat = 0; int winnerrat = 0; double pscore = 0.0;
+  double kp = 0.0; signed int ratingdiff = 0;
   double divi =0.0;
 
   for(size_t runindex=0; runindex < r; runindex++) {
     for (size_t seqindex=0; seqindex < winner.size(); seqindex++) {
       for(size_t k=0; k < allids.size(); k++) {
-        if(allids[k]==loserrand[seqindex])  { looserrat = svals[k]; }
+        if(allids[k]==loserrand[seqindex])  { loserrat = svals[k]; }
         if(allids[k]==winnerrand[seqindex]) { winnerrat = svals[k]; }
       }
 
-      ratingdiff = winnerrat - looserrat;
+      ratingdiff = winnerrat - loserrat;
       wmat(runindex, seqindex) = ratingdiff;
       if (ratingdiff > 0) {
         dmat(runindex,seqindex) = true;
@@ -53,22 +52,16 @@ List eloint(CharacterVector winner, CharacterVector loser, CharacterVector allid
         umat(runindex, seqindex) = true;
       }
 
-      // 'old' way based on normal distribution
-      //pscore = Rf_pnorm5((winnerrat - looserrat)/(200 * sqrt(2)), 0.0, 1.0, 1, 0);
-      //       if(probmode[seqindex] == 1) {
-      //         pscore = Rf_pnorm5((winnerrat - looserrat)/(200 * sqrt(2)), 0.0, 1.0, 1, 0);
-      //       }
-      // change to logistic approach
-      // E = 1 / (1 + 10^(ratingdiff/400))
-      //if(probmode[seqindex] == 2) {
+
+      // calculate winning probabilities
+      // change to logistic approach ('old' normal approach is now in 'elointnorm')
       divi = ratingdiff/400.0;
       pscore =  1 - 1 / (1 + pow(10.0, divi)) ;
-      //}
 
       // update ratings
-      kp = kv * pscore; looserrat = round(looserrat + kp - kv); winnerrat = round(winnerrat - kp + kv);
+      kp = kv * pscore; loserrat = round(loserrat + kp - kv); winnerrat = round(winnerrat - kp + kv);
       for(size_t k=0; k < allids.size(); k++) {
-        if(allids[k]==loserrand[seqindex]) { svals[k] = looserrat; }
+        if(allids[k]==loserrand[seqindex]) { svals[k] = loserrat; }
         if(allids[k]==winnerrand[seqindex]) { svals[k] = winnerrat; }
       }
 
@@ -126,18 +119,18 @@ List elointnorm(CharacterVector winner, CharacterVector loser, CharacterVector a
   }
 
   int kv = kval[0];
-  int looserrat = 0; int winnerrat = 0; double pscore = 0.0;
+  int loserrat = 0; int winnerrat = 0; double pscore = 0.0;
   double kp = 0.0; signed int ratingdiff = 0;
 
 
   for(size_t runindex=0; runindex < r; runindex++) {
     for (size_t seqindex=0; seqindex < winner.size(); seqindex++) {
       for(size_t k=0; k < allids.size(); k++) {
-        if(allids[k]==loserrand[seqindex])  { looserrat = svals[k]; }
+        if(allids[k]==loserrand[seqindex])  { loserrat = svals[k]; }
         if(allids[k]==winnerrand[seqindex]) { winnerrat = svals[k]; }
       }
 
-      ratingdiff = winnerrat - looserrat;
+      ratingdiff = winnerrat - loserrat;
       wmat(runindex, seqindex) = ratingdiff;
       if (ratingdiff > 0) {
         dmat(runindex,seqindex) = true;
@@ -147,11 +140,11 @@ List elointnorm(CharacterVector winner, CharacterVector loser, CharacterVector a
         umat(runindex, seqindex) = true;
       }
 
-
-      pscore = Rf_pnorm5((winnerrat - looserrat)/(200 * sqrt(2)),0.0,1.0,1,0);
-      kp = kv * pscore; looserrat = round(looserrat + kp - kv); winnerrat = round(winnerrat - kp + kv);
-      for(size_t k=0; k < allids.size();k++) {
-        if(allids[k]==loserrand[seqindex]) { svals[k] = looserrat; }
+      // winning probabilities following 'normal' approach
+      pscore = Rf_pnorm5((winnerrat - loserrat)/(200 * sqrt(2.0)), 0.0, 1.0, 1, 0);
+      kp = kv * pscore; loserrat = round(loserrat + kp - kv); winnerrat = round(winnerrat - kp + kv);
+      for(size_t k=0; k < allids.size(); k++) {
+        if(allids[k]==loserrand[seqindex]) { svals[k] = loserrat; }
         if(allids[k]==winnerrand[seqindex]) { svals[k] = winnerrat; }
       }
 

@@ -4,7 +4,7 @@
 %\usepackage[colorinlistoftodos]{todonotes}
 
 \author{Christof Neumann and Andrew P. Clark}
-\title{\texttt{EloChoice (v. 0.28)} - a brief tutorial}
+\title{\texttt{EloChoice (v. 0.29)} - a brief tutorial}
 % \usepackage{natbib}
 % \bibliographystyle{agsm}
 \usepackage[utf8]{inputenc}
