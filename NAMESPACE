@@ -1,0 +1,7 @@
+exportPattern("^[[:alpha:]]+")
+useDynLib(EloChoice)
+importFrom(Rcpp, evalCpp)
+importFrom("graphics", "axis", "box", "plot", "points", "segments")
+importFrom("stats", "median", "pnorm", "rnbinom", "var", "weighted.mean")
+importFrom("utils", "combn", "setTxtProgressBar", "txtProgressBar")
+S3method(summary, elochoice)
